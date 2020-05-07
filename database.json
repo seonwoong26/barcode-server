@@ -1,0 +1,7 @@
+{
+    "host": "management-barcode.c7kqoug7ymux.us-east-2.rds.amazonaws.com", 
+    "user": "user"  ,
+    "password": "123456789",
+    "port": "3306"  ,
+    "database": "management"
+}

@@ -48,6 +48,7 @@ app.get('/api/customers', (req, res) => {
 app.post('/api/customers', upload.single('image'), (req, res) => {
   let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
   // let image = '/image/' + req.file.filename;
+  console.log("cc")
   let image = req.body.image
   let code = req.body.code;
   let name = req.body.name;
