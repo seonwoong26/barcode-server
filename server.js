@@ -68,7 +68,7 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
 });
 
 app.post('/api/stock_in', (req, res) => {
-  let sql = 'INSERT INTO STOCK_IN VALUES (null, ?, ?, ?, ?, now(), 0)';
+  let sql = 'INSERT INTO STOCK_IN (code, name, qty, date_in, createdDate, isDeleted) VALUES (?, ?, ?, ?, now(), 0)';
   let code = req.body.code;
   let name = req.body.name;
   let qty = req.body.qty;
