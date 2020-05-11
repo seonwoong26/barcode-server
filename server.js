@@ -49,15 +49,16 @@ app.get('/api/customers', (req, res) => {
 
 
 app.post('/api/customers', upload.single('image'), (req, res) => {
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
+  let sql = 'INSERT INTO CUSTOMER ( code, name, price, qty, createdDate, isDeleted) VALUES ( ?, ?, ?, ?, now(), 0)';
   // let image = '/image/' + req.file.filename;
   console.log("cc")
-  let image = req.body.image
+  console.log(req.body)
+  // let image = req.body.image
   let code = req.body.code;
   let name = req.body.name;
   let price = req.body.price;
   let qty = req.body.qty;
-  let params = [image, code, name, price, qty];
+  let params = [code, name, price, qty];
   connection.query(sql, params,
     (err, rows, fields) => {
       res.send(rows);
