@@ -47,6 +47,37 @@ app.get('/api/customers', (req, res) => {
   );
 });
 
+app.get('/api/stock_in', (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  connection.query(
+    "SELECT * FROM STOCK_IN",
+    (err, rows, fields) => {
+      if (err) console.error(err);
+
+      res.send(rows);
+    }
+  );
+});
+
+// app.get('/api/stock_in', (req, res) => {
+
+//   let sql = 'SELECT * FROM STOCK_IN';
+//   // let image = '/image/' + req.file.filename;
+//   let code = req.body.code;
+//   let name = req.body.name;
+//   let qty = req.body.qty;
+//   let date_in = req.body.date_in;
+//   let params = [code, name, qty, date_in];
+//   connection.query(sql, params,
+//     (err, rows, fields) => {
+//       console.log(rows)
+//       res.send(rows);
+//       console.log(rows);
+//     }
+//   );
+// });
+
 
 app.post('/api/customers', upload.single('image'), (req, res) => {
   let sql = 'INSERT INTO CUSTOMER ( code, name, price, qty, createdDate, isDeleted) VALUES ( ?, ?, ?, ?, now(), 0)';
@@ -74,6 +105,7 @@ app.post('/api/stock_in', (req, res) => {
   let qty = req.body.qty;
   let date_in = req.body.date_in;
   let params = [code, name, qty, date_in];
+  console.log(req.body)
   connection.query(sql, params,
     (err, rows, fields) => {
       res.send(rows);
@@ -82,23 +114,7 @@ app.post('/api/stock_in', (req, res) => {
   );
 });
 
-app.get('/api/stock_in', (req, res) => {
 
-  let sql = 'SELECT * FROM STOCK_IN WHERE isDeleted = 0 ';
-  // let image = '/image/' + req.file.filename;
-  let code = req.body.code;
-  let name = req.body.name;
-  let qty = req.body.qty;
-  let date_in = req.body.date_in;
-  let params = [code, name, qty, date_in];
-  connection.query(sql, params,
-    (err, rows, fields) => {
-      console.log(rows)
-      res.send(rows);
-      console.log(rows);
-    }
-  );
-});
 
 app.post('/api/delete/:id', (req, res) => {
   let sql = 'DELETE FROM CUSTOMER WHERE ID = ?';

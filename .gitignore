@@ -142,3 +142,6 @@ dist
 
 # my custom gitignore
 upload/
+
+# database
+/database.json
