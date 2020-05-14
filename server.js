@@ -62,7 +62,7 @@ app.get('/api/customers', (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   connection.query(
-    "SELECT * FROM CUSTOMER WHERE code = ?",
+    "SELECT * FROM CUSTOMER WHERE (code) VALUES(?)",
     (err, rows, fields) => {
       if (err) console.error(err);
 
