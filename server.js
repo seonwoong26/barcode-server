@@ -58,6 +58,19 @@ app.get('/api/stock_in', (req, res) => {
   );
 });
 
+app.get('/api/customers', (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  connection.query(
+    "SELECT * FROM CUSTOMER WHERE code = ?",
+    (err, rows, fields) => {
+      if (err) console.error(err);
+
+      res.send(rows);
+    }
+  );
+});
+
 // app.get('/api/stock_in', (req, res) => {
 
 //   let sql = 'SELECT * FROM STOCK_IN';
