@@ -48,8 +48,6 @@ app.get('/api/customers', (req, res) => {
 });
 
 app.get('/api/stock_in', (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
   connection.query(
     "SELECT * FROM STOCK_IN",
     (err, rows, fields) => {
@@ -136,19 +134,19 @@ app.post('/api/delete/:id', (req, res) => {
   )
 });
 
-app.post('/api/scanner', (req, res) => {
-  let sql = "INSERT INTO sn (name) VALUES (?)";
-  var name = req.body.name
-  console.log(req.body)
-  let params = [name];
-  console.log(params)
-  connection.query(sql, params,
-    (err, rows) => {
-      res.send(rows);
-      console.log(rows);
-    }
-  );
-});
+// app.post('/api/scanner', (req, res) => {
+//   let sql = "INSERT INTO sn (name) VALUES (?)";
+//   var name = req.body.name
+//   console.log(req.body)
+//   let params = [name];
+//   console.log(params)
+//   connection.query(sql, params,
+//     (err, rows) => {
+//       res.send(rows);
+//       console.log(rows);
+//     }
+//   );
+// });
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
