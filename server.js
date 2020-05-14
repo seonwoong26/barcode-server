@@ -104,11 +104,6 @@ app.post('/api/stock_in', (req, res) => {
   let name = req.body.name;
   let qty = req.body.qty;
   let date_in = req.body.date_in;
-  console.log(code);
-  console.log(name);
-  console.log(qty);
-  console.log(date_in);
-
   let params = [code, name, qty, date_in];
   console.log(req.body)
   connection.query(sql, params,
