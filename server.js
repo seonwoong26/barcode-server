@@ -38,11 +38,11 @@ app.get('/api/customers', (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   connection.query(
-    "SELECT code, name, price, qty FROM CUSTOMER WHERE (code = ?) ", [req.body.code],
+    "SELECT code, name, price, qty FROM CUSTOMER WHERE (code =?) ",
     (err, rows, fields) => {
       if (err) console.error(err);
-
-      res.send(rows);
+      rows.data.
+        res.send(rows);
     }
   );
 });
@@ -111,43 +111,48 @@ app.post('/api/stock_in', (req, res) => {
       console.log(rows);
     }
   );
-});
+
+  app.post('/api/customers', (req, res) => {
+    let sql = 'UPDATE CUSTOMER SET Qty=Qty+1 WHERE Code=?';
+    connection.query(sql, [code]);
+
+  });
 
 
 
-app.post('/api/delete/:id', (req, res) => {
-  let sql = 'DELETE FROM CUSTOMER WHERE ID = ?';
-  let params = [req.params.id];
-  connection.query(sql, params,
-    (err, rows, fields) => {
-      res.send(rows);
-    }
-  )
-});
+  app.post('/api/delete/:id', (req, res) => {
+    let sql = 'DELETE FROM CUSTOMER WHERE ID = ?';
+    let params = [req.params.id];
+    connection.query(sql, params,
+      (err, rows, fields) => {
+        res.send(rows);
+      }
+    )
+  });
 
-app.post('/api/delete/:id', (req, res) => {
-  let sql = 'DELETE FROM STOCK_IN WHERE ID = ?';
-  let params = [req.params.id];
-  connection.query(sql, params,
-    (err, rows, fields) => {
-      res.send(rows);
-    }
-  )
-});
+  app.post('/api/delete/:id', (req, res) => {
+    let sql = 'DELETE FROM STOCK_IN WHERE ID = ?';
+    let params = [req.params.id];
+    connection.query(sql, params,
+      (err, rows, fields) => {
+        res.send(rows);
+      }
+    )
+  });
 
-// app.post('/api/scanner', (req, res) => {
-//   let sql = "INSERT INTO sn (name) VALUES (?)";
-//   var name = req.body.name
-//   console.log(req.body)
-//   let params = [name];
-//   console.log(params)
-//   connection.query(sql, params,
-//     (err, rows) => {
-//       res.send(rows);
-//       console.log(rows);
-//     }
-//   );
-// });
+  // app.post('/api/scanner', (req, res) => {
+  //   let sql = "INSERT INTO sn (name) VALUES (?)";
+  //   var name = req.body.name
+  //   console.log(req.body)
+  //   let params = [name];
+  //   console.log(params)
+  //   connection.query(sql, params,
+  //     (err, rows) => {
+  //       res.send(rows);
+  //       console.log(rows);
+  //     }
+  //   );
+  // });
 
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+  app.listen(port, () => console.log(`Listening on port ${port}`));
