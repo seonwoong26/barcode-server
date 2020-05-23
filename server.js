@@ -46,7 +46,7 @@ app.get('/api/product', (req, res) => {
 
 
 app.post('/api/customers', (req, res) => {
-  let _query = "INSERT INTO inventory (code, name, count) VALUES (?, ?, ?)";
+  let _query = "INSERT INTO CUSTOMER (code, name, price, count) VALUES (?, ?, ?)";
   // let _query2 = "SELECT * FROM inventory WHERE(stock) VALUES < (0)"
 
   let code = req.body.code;
@@ -64,7 +64,7 @@ app.post('/api/customers', (req, res) => {
   }
 
 
-  var query = connection.query(_query, [product_name, stock, ean], function (err, result) {
+  var query = connection.query(_query, [code, name, price, count], function (err, result) {
     if (err) {
       console.error(err);
       throw err;
@@ -79,19 +79,19 @@ app.post('/api/customers', (req, res) => {
   });
 })
 
-app.post('/api/in_stock', (req, res) => {
-  let _query = "INSERT INTO in_stock (quantity, in_datetime, prod_barcode) VALUES (?, ?, ?)";
+app.post('/api/stock_in', (req, res) => {
+  let _query = "INSERT INTO STOCK_IN (code, qty, in_datetime) VALUES (?, ?, ?)";
   let _query2 = "UPDATE inventory SET stock = stock + ? where ean=?"
   // let _query2 = "UPDATE inventory SET stock = stock + quantity where ean=prod_barcode"
-  let quantity = req.body.quantity;
+  let code = req.body.code;
   let in_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
-  let prod_barcode = req.body.prod_barcode
+  let qty = req.body.qty
 
 
 
   console.log(in_datetime)
   console.log(req.body)
-  if (!(quantity && in_datetime)) {
+  if (!(qty && in_datetime)) {
     console.log('error')
     res.send(401, 'failed')
   }
@@ -99,14 +99,14 @@ app.post('/api/in_stock', (req, res) => {
 
   console.log("IN")
 
-  var query = connection.query(_query, [quantity, in_datetime, prod_barcode], function (err, result) {
+  var query = connection.query(_query, [qty, in_datetime, code], function (err, result) {
     if (err) {
       console.error(err);
       throw err;
     }
 
 
-    connection.query(_query2, [quantity, prod_barcode], function (err, _result) {
+    connection.query(_query2, [qty, code], function (err, _result) {
       if (err) {
         console.error(err);
         throw err;
@@ -138,18 +138,18 @@ app.get('/api/in_stock', (req, res) => {
 });
 
 
-app.post('/api/out_stock', (req, res) => {
+app.post('/api/stock_out', (req, res) => {
   // INSERT INTO `Barcode`.`in_stock` (`quantity`, `in_datetime`, `prod_barcode`) VALUES ('1', '2020-10-31 00:00:00', '1231231231119');
-  let _query = "INSERT INTO out_stock (quantity, out_datetime, prod_barcode) VALUES (?, ?, ?)";
+  let _query = "INSERT INTO stock_out (code, out_datetime, qty) VALUES (?, ?, ?)";
   let _query2 = "UPDATE inventory SET stock = stock - ? where ean=?"
 
-  let quantity = req.body.quantity;
+  let qty = req.body.qty;
   let out_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
   // let out_datetime = req.body.out_datetime;
-  let prod_barcode = req.body.prod_barcode;
+  let code = req.body.code;
 
   console.log(req.body)
-  if (!(quantity && out_datetime)) {
+  if (!(qty && out_datetime)) {
     console.log('error')
     return res.send(401, 'failed')
   }
@@ -171,12 +171,12 @@ app.post('/api/out_stock', (req, res) => {
       })
     }
 
-    var query = connection.query(_query, [quantity, out_datetime, prod_barcode], function (err, result) {
+    var query = connection.query(_query, [qty, out_datetime, code], function (err, result) {
       if (err) {
         console.error(err);
         throw err;
       }
-      connection.query(_query2, [quantity, prod_barcode], function (err, result) {
+      connection.query(_query2, [qty, code], function (err, result) {
         if (err) {
           console.error(err);
           throw err;
