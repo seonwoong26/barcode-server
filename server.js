@@ -199,7 +199,7 @@ app.post('/api/stock_out', (req, res) => {
 
 
 app.get('/api/out_stock', (req, res) => {
-  connection.query("SELECT * FROM out_stock", function (err, result, fields) {
+  connection.query("SELECT * FROM stock_out", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
     console.log(fields)
