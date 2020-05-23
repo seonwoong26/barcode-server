@@ -31,8 +31,8 @@ const multer = require('multer');
 const upload = multer({ dest: './upload' })
 
 
-app.get('/api/customers', (req, res) => {
-  connection.query("SELECT * FROM inventory", function (err, result, fields) {
+app.get('/api/item', (req, res) => {
+  connection.query("SELECT * FROM ITEM", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
     console.log(fields)
@@ -45,8 +45,8 @@ app.get('/api/customers', (req, res) => {
 });
 
 
-app.post('/api/customers', (req, res) => {
-  let _query = "INSERT INTO CUSTOMER (code, name, price, count) VALUES (?, ?, ?)";
+app.post('/api/item', (req, res) => {
+  let _query = "INSERT INTO ITEM (code, name, price, count) VALUES (?, ?, ?)";
   // let _query2 = "SELECT * FROM inventory WHERE(stock) VALUES < (0)"
 
   let code = req.body.code;
