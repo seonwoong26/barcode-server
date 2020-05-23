@@ -31,7 +31,7 @@ const multer = require('multer');
 const upload = multer({ dest: './upload' })
 
 
-app.get('/api/product', (req, res) => {
+app.get('/api/customers', (req, res) => {
   connection.query("SELECT * FROM inventory", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
