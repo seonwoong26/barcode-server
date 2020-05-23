@@ -125,7 +125,7 @@ app.post('/api/stock_in', (req, res) => {
 });
 
 app.get('/api/in_stock', (req, res) => {
-  connection.query("SELECT * FROM in_stock", function (err, result, fields) {
+  connection.query("SELECT * FROM stock_in", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
     console.log(fields)
