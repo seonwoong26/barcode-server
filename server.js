@@ -81,8 +81,8 @@ app.post('/api/item', (req, res) => {
 })
 
 app.post('/api/stock_in', (req, res) => {
-  let _query = "INSERT INTO STOCK_IN (code, qty, date_in, createdDate) VALUES (?, ?, ?)";
-  let _query2 = "UPDATE ITEM SET qty = qty + ? where code=?"
+  let _query = "INSERT INTO STOCK_IN (code, qty, createdDate) VALUES (?, ?, ?)";
+  let _query2 = "UPDATE ITEM SET qty = ? where code=?"
   // let _query2 = "UPDATE inventory SET stock = stock + quantity where ean=prod_barcode"
   let code = req.body.code;
   let date_in = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -101,31 +101,43 @@ app.post('/api/stock_in', (req, res) => {
   console.log("IN")
 
   connection.query(_query, [code, qty, date_in], function (err, result) {
+    var inputCode = code
+    connection.query('SELECT * FROM ITEM WHERE code= ?', [inputCode], (err, resultData) => {
+      console.log(resultData[0].qty)
+      var addCode = resultData[0].qty
+      var addCode_1 = addCode + 1
+
+      connection.query(_query2, [addCode_1, inputCode], function (err, _result) {
+        // var addCode = _result
+        console.log(_result)
+        if (err) {
+          console.error(err);
+          throw err;
+        }
+        connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
+          console.log(result)
+          res.send(201, {
+            status: 'ok',
+            result: result
+          });
+        })
+      })
+    })
+    // console.log(result)
     if (err) {
       console.error(err);
       throw err;
     }
 
 
-    connection.query(_query2, [qty, code], function (err, _result) {
-      if (err) {
-        console.error(err);
-        throw err;
-      }
-      connection.query('SELECT * FROM item where code=?', [code], function (err, result) {
-        res.send(201, {
-          status: 'ok',
-          result: result
-        });
-      })
-    })
+
 
   });
 
 });
 
 app.get('/api/stock_in', (req, res) => {
-  connection.query("SELECT * FROM stock_in", function (err, result, fields) {
+  connection.query("SELECT * FROM STOCK_IN", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
     console.log(fields)
@@ -170,144 +182,160 @@ app.get('/api/stock_in', (req, res) => {
         })
       }
 
-      var query = connection.query(_query, [code, date_out, qty], function (err, result) {
-        if (err) {
-          console.error(err);
-          throw err;
-        }
-        connection.query(_query2, [code, qty], function (err, result) {
-          if (err) {
-            console.error(err);
-            throw err;
-          }
-          item.qty -= 1
-          return res.send(201, {
-            status: 'ok',
-            result: item
+      connection.query(_query, [code, qty, date_out], function (err, result) {
+        var outputCode = code
+        connection.query('SELECT * FROM ITEM WHERE code= ?', [outputCode], (err, resultData) => {
+          console.log(resultData[0].qty)
+          var DeleteCode = resultData[0].qty
+          var DeleteCode_1 = DeleteCode - 1
 
-          });
+          connection.query(_query2, [DeleteCode_1, DeleteCode], function (err, _result) {
+            // var addCode = _result
+            console.log(_result)
+            if (err) {
+              console.error(err);
+              throw err;
+            }
+            connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
+              console.log(result)
+              res.send(201, {
+                status: 'ok',
+                result: result
+
+                // var query = connection.query(_query, [code, date_out, qty], function (err, result) {
+                //   if (err) {
+                //     console.error(err);
+                //     throw err;
+                //   }
+                //   connection.query(_query2, [code, qty], function (err, result) {
+                //     if (err) {
+                //       console.error(err);
+                //       throw err;
+                //     }
+                //     item.qty -= 1
+                //     return res.send(201, {
+                //       status: 'ok',
+                //       result: item
+
+              });
+            })
+          })
         })
 
 
+        app.get('/api/stock_out', (req, res) => {
+          connection.query("SELECT * FROM stock_out", function (err, result, fields) {
+            if (err) throw err;
+            console.log(result);
+            console.log(fields)
+
+            res.send(201, {
+              status: 'ok',
+              result: result
+            });
+          });
+
+          res.send(rows);
+        }
+        );
+
       });
 
-    })
 
-  });
+      // app.get('/api/stock_in', (req, res) => {
 
-  app.get('/api/stock_out', (req, res) => {
-    connection.query("SELECT * FROM stock_out", function (err, result, fields) {
-      if (err) throw err;
-      console.log(result);
-      console.log(fields)
+      //   let sql = 'SELECT * FROM STOCK_IN';
+      //   // let image = '/image/' + req.file.filename;
+      //   let code = req.body.code;
+      //   let name = req.body.name;
+      //   let qty = req.body.qty;
+      //   let date_in = req.body.date_in;
+      //   let params = [code, name, qty, date_in];
+      //   connection.query(sql, params,
+      //     (err, rows, fields) => {
+      //       console.log(rows)
+      //       res.send(rows);
+      //       console.log(rows);
+      //     }
+      //   );
+      // });
 
-      res.send(201, {
-        status: 'ok',
-        result: result
+
+      // app.post('/api/customers', upload.single('image'), (req, res) => {
+      //   let sql = 'INSERT INTO CUSTOMER ( code, name, price, qty, createdDate, isDeleted) VALUES ( ?, ?, ?, ?, now(), 0)';
+      //   // let image = '/image/' + req.file.filename;
+      //   console.log("cc")
+      //   console.log(req.body)
+      //   // let image = req.body.image
+      //   let code = req.body.code;
+      //   let name = req.body.name;
+      //   let price = req.body.price;
+      //   let qty = req.body.qty;
+      //   let params = [code, name, price, qty];
+      //   connection.query(sql, params,
+      //     (err, rows, fields) => {
+      //       res.send(rows);
+      //       console.log(rows);
+      //     }
+      //   );
+      // });
+
+      // app.post('/api/stock_in', (req, res) => {
+      //   let sql = 'INSERT INTO STOCK_IN (code, name, qty, date_in, createdDate, isDeleted) VALUES (?, ?, ?, ?, now(), 0)';
+      //   let code = req.body.code;
+      //   let name = req.body.name;
+      //   let qty = req.body.qty;
+      //   let date_in = req.body.date_in;
+      //   let params = [code, name, qty, date_in];
+      //   console.log(req.body)
+      //   connection.query(sql, params,
+      //     (err, rows, fields) => {
+      //       res.send(rows);
+      //       console.log(rows);
+      //     }
+      //   );
+
+      //   app.post('/api/customers', (req, res) => {
+      //     let sql = 'UPDATE CUSTOMER SET Qty=Qty+1 WHERE Code=?';
+      //     connection.query(sql, [code]);
+
+      //   });
+
+
+
+      app.post('/api/delete/:id', (req, res) => {
+        let sql = 'DELETE FROM CUSTOMER WHERE ID = ?';
+        let params = [req.params.id];
+        connection.query(sql, params,
+          (err, rows, fields) => {
+            res.send(rows);
+          }
+        )
       });
-    });
 
-    res.send(rows);
-  }
-  );
+      app.post('/api/delete/:id', (req, res) => {
+        let sql = 'DELETE FROM STOCK_IN WHERE ID = ?';
+        let params = [req.params.id];
+        connection.query(sql, params,
+          (err, rows, fields) => {
+            res.send(rows);
+          }
+        )
+      });
 
-});
-
-
-// app.get('/api/stock_in', (req, res) => {
-
-//   let sql = 'SELECT * FROM STOCK_IN';
-//   // let image = '/image/' + req.file.filename;
-//   let code = req.body.code;
-//   let name = req.body.name;
-//   let qty = req.body.qty;
-//   let date_in = req.body.date_in;
-//   let params = [code, name, qty, date_in];
-//   connection.query(sql, params,
-//     (err, rows, fields) => {
-//       console.log(rows)
-//       res.send(rows);
-//       console.log(rows);
-//     }
-//   );
-// });
+      // app.post('/api/scanner', (req, res) => {
+      //   let sql = "INSERT INTO sn (name) VALUES (?)";
+      //   var name = req.body.name
+      //   console.log(req.body)
+      //   let params = [name];
+      //   console.log(params)
+      //   connection.query(sql, params,
+      //     (err, rows) => {
+      //       res.send(rows);
+      //       console.log(rows);
+      //     }
+      //   );
+      // });
 
 
-// app.post('/api/customers', upload.single('image'), (req, res) => {
-//   let sql = 'INSERT INTO CUSTOMER ( code, name, price, qty, createdDate, isDeleted) VALUES ( ?, ?, ?, ?, now(), 0)';
-//   // let image = '/image/' + req.file.filename;
-//   console.log("cc")
-//   console.log(req.body)
-//   // let image = req.body.image
-//   let code = req.body.code;
-//   let name = req.body.name;
-//   let price = req.body.price;
-//   let qty = req.body.qty;
-//   let params = [code, name, price, qty];
-//   connection.query(sql, params,
-//     (err, rows, fields) => {
-//       res.send(rows);
-//       console.log(rows);
-//     }
-//   );
-// });
-
-// app.post('/api/stock_in', (req, res) => {
-//   let sql = 'INSERT INTO STOCK_IN (code, name, qty, date_in, createdDate, isDeleted) VALUES (?, ?, ?, ?, now(), 0)';
-//   let code = req.body.code;
-//   let name = req.body.name;
-//   let qty = req.body.qty;
-//   let date_in = req.body.date_in;
-//   let params = [code, name, qty, date_in];
-//   console.log(req.body)
-//   connection.query(sql, params,
-//     (err, rows, fields) => {
-//       res.send(rows);
-//       console.log(rows);
-//     }
-//   );
-
-//   app.post('/api/customers', (req, res) => {
-//     let sql = 'UPDATE CUSTOMER SET Qty=Qty+1 WHERE Code=?';
-//     connection.query(sql, [code]);
-
-//   });
-
-
-
-app.post('/api/delete/:id', (req, res) => {
-  let sql = 'DELETE FROM CUSTOMER WHERE ID = ?';
-  let params = [req.params.id];
-  connection.query(sql, params,
-    (err, rows, fields) => {
-      res.send(rows);
-    }
-  )
-});
-
-app.post('/api/delete/:id', (req, res) => {
-  let sql = 'DELETE FROM STOCK_IN WHERE ID = ?';
-  let params = [req.params.id];
-  connection.query(sql, params,
-    (err, rows, fields) => {
-      res.send(rows);
-    }
-  )
-});
-
-// app.post('/api/scanner', (req, res) => {
-//   let sql = "INSERT INTO sn (name) VALUES (?)";
-//   var name = req.body.name
-//   console.log(req.body)
-//   let params = [name];
-//   console.log(params)
-//   connection.query(sql, params,
-//     (err, rows) => {
-//       res.send(rows);
-//       console.log(rows);
-//     }
-//   );
-// });
-
-
-app.listen(port, () => console.log(`Listening on port ${port}`));
+      app.listen(port, () => console.log(`Listening on port ${port}`));
