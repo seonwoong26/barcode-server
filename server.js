@@ -1,15 +1,17 @@
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
-var cors = require('cors')
+var cors = require('cors');
+
+var moment = require('moment');
 const app = express();
 const port = process.env.PORT || 5000;
 
+process.env.TZ = 'Asia/Seoul'
 
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors())
 
 const data = fs.readFileSync('./database.json');
 const conf = JSON.parse(data);
@@ -46,16 +48,15 @@ app.get('/api/item', (req, res) => {
 
 
 app.post('/api/item', (req, res) => {
-  let _query = "INSERT INTO ITEM (code, name, price, count) VALUES (?, ?, ?)";
+  let _query = "INSERT INTO ITEM (code, name, price, qty) VALUES (?, ?, ?)";
   // let _query2 = "SELECT * FROM inventory WHERE(stock) VALUES < (0)"
 
   let code = req.body.code;
   let name = req.body.name;
   let price = req.body.price;
   let qty = req.body.qty;
-  let params = [code, name, price, qty];
 
-  if (!(product_name && ean)) {
+  if (!(name && qty)) {
     console.log('error')
     res.send(401, 'failed')
   }
@@ -74,14 +75,14 @@ app.post('/api/item', (req, res) => {
 
     res.send(200, {
       status: 'ok',
-      result: `inventory is open`
+      result: `ITEM is open`
     });
   });
 })
 
 app.post('/api/stock_in', (req, res) => {
   let _query = "INSERT INTO STOCK_IN (code, qty, in_datetime) VALUES (?, ?, ?)";
-  let _query2 = "UPDATE ITEM SET stock = stock + ? where ean=?"
+  let _query2 = "UPDATE ITEM SET qty = qty + ? where code=?"
   // let _query2 = "UPDATE inventory SET stock = stock + quantity where ean=prod_barcode"
   let code = req.body.code;
   let in_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -111,7 +112,7 @@ app.post('/api/stock_in', (req, res) => {
         console.error(err);
         throw err;
       }
-      connection.query('SELECT * FROM ITEM where ean=?', [code], function (err, result) {
+      connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
         res.send(201, {
           status: 'ok',
           result: result
@@ -140,7 +141,7 @@ app.get('/api/stock_in', (req, res) => {
   app.post('/api/stock_out', (req, res) => {
     // INSERT INTO `Barcode`.`in_stock` (`quantity`, `in_datetime`, `prod_barcode`) VALUES ('1', '2020-10-31 00:00:00', '1231231231119');
     let _query = "INSERT INTO stock_out (code, out_datetime, qty) VALUES (?, ?, ?)";
-    let _query2 = "UPDATE ITEM SET stock = stock - ? where ean=?"
+    let _query2 = "UPDATE ITEM SET qty = qty - ? where code=?"
 
     let qty = req.body.qty;
     let out_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -154,8 +155,8 @@ app.get('/api/stock_in', (req, res) => {
     }
     console.log("OUT")
 
-    let _query3 = "SELECT * FROM ITEM where ean=? ;"
-    connection.query(_query3, [prod_barcode], function (err, result) {
+    let _query3 = "SELECT * FROM ITEM where code=? ;"
+    connection.query(_query3, [code], function (err, result) {
       if (err) {
         console.error(err);
         throw err;
