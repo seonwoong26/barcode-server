@@ -81,7 +81,7 @@ app.post('/api/item', (req, res) => {
 
 app.post('/api/stock_in', (req, res) => {
   let _query = "INSERT INTO STOCK_IN (code, qty, in_datetime) VALUES (?, ?, ?)";
-  let _query2 = "UPDATE inventory SET stock = stock + ? where ean=?"
+  let _query2 = "UPDATE ITEM SET stock = stock + ? where ean=?"
   // let _query2 = "UPDATE inventory SET stock = stock + quantity where ean=prod_barcode"
   let code = req.body.code;
   let in_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -111,7 +111,7 @@ app.post('/api/stock_in', (req, res) => {
         console.error(err);
         throw err;
       }
-      connection.query('SELECT * FROM inventory where ean=?', [prod_barcode], function (err, result) {
+      connection.query('SELECT * FROM ITEM where ean=?', [code], function (err, result) {
         res.send(201, {
           status: 'ok',
           result: result
@@ -124,7 +124,7 @@ app.post('/api/stock_in', (req, res) => {
   });
 });
 
-app.get('/api/in_stock', (req, res) => {
+app.get('/api/stock_in', (req, res) => {
   connection.query("SELECT * FROM stock_in", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
@@ -140,7 +140,7 @@ app.get('/api/in_stock', (req, res) => {
   app.post('/api/stock_out', (req, res) => {
     // INSERT INTO `Barcode`.`in_stock` (`quantity`, `in_datetime`, `prod_barcode`) VALUES ('1', '2020-10-31 00:00:00', '1231231231119');
     let _query = "INSERT INTO stock_out (code, out_datetime, qty) VALUES (?, ?, ?)";
-    let _query2 = "UPDATE inventory SET stock = stock - ? where ean=?"
+    let _query2 = "UPDATE ITEM SET stock = stock - ? where ean=?"
 
     let qty = req.body.qty;
     let out_datetime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -154,7 +154,7 @@ app.get('/api/in_stock', (req, res) => {
     }
     console.log("OUT")
 
-    let _query3 = "SELECT * FROM inventory where ean=? ;"
+    let _query3 = "SELECT * FROM ITEM where ean=? ;"
     connection.query(_query3, [prod_barcode], function (err, result) {
       if (err) {
         console.error(err);
@@ -195,7 +195,7 @@ app.get('/api/in_stock', (req, res) => {
 
   });
 
-  app.get('/api/out_stock', (req, res) => {
+  app.get('/api/stock_out', (req, res) => {
     connection.query("SELECT * FROM stock_out", function (err, result, fields) {
       if (err) throw err;
       console.log(result);
