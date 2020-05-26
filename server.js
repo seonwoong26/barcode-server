@@ -127,11 +127,9 @@ app.post('/api/stock_in', (req, res) => {
     if (err) {
       console.error(err);
       throw err;
-    }
-
-
-
-
+ 
+     }
+ 
   });
 
 });
@@ -146,62 +144,62 @@ app.get('/api/stock_in', (req, res) => {
       status: 'ok',
       result: result
     });
-  });
+   });
+  })
 
+app.post('/api/stock_out', (req, res) => {
+  // INSERT INTO `Barcode`.`in_stock` (`quantity`, `in_datetime`, `prod_barcode`) VALUES ('1', '2020-10-31 00:00:00', '1231231231119');
+  let _query = "INSERT INTO stock_out (code, date_out, qty) VALUES (?, ?, ?)";
+  let _query2 = "UPDATE ITEM SET qty = qty - ? where code=?"
 
-  app.post('/api/stock_out', (req, res) => {
-    // INSERT INTO `Barcode`.`in_stock` (`quantity`, `in_datetime`, `prod_barcode`) VALUES ('1', '2020-10-31 00:00:00', '1231231231119');
-    let _query = "INSERT INTO stock_out (code, date_out, qty) VALUES (?, ?, ?)";
-    let _query2 = "UPDATE ITEM SET qty = qty - ? where code=?"
+  let qty = req.body.qty;
+  let date_out = moment().format('YYYY-MM-DD HH:mm:ss');
+  // let out_datetime = req.body.out_datetime;
+  let code = req.body.code;
 
-    let qty = req.body.qty;
-    let date_out = moment().format('YYYY-MM-DD HH:mm:ss');
-    // let out_datetime = req.body.out_datetime;
-    let code = req.body.code;
+  console.log(req.body)
+  if (!(qty && date_out)) {
+    console.log('error')
+    return res.send(401, 'failed')
+  }
+  console.log("OUT")
 
-    console.log(req.body)
-    if (!(qty && date_out)) {
-      console.log('error')
-      return res.send(401, 'failed')
+  let _query3 = "SELECT * FROM ITEM where code=? ;"
+  connection.query(_query3, [code], function (err, result) {
+    if (err) {
+      console.error(err);
+      throw err;
     }
-    console.log("OUT")
+    let item = result[0];
+    // 재고 체크
+    if (item.qty <= 0) {
+      console.log('stock is 0')
 
-    let _query3 = "SELECT * FROM ITEM where code=? ;"
-    connection.query(_query3, [code], function (err, result) {
+      return res.send(401, {
+        message: '재고가 0인 상품은 출고를 할 수 없습니다.'
+      })
+    }
+  })
+
+connection.query(_query, [code, qty, date_out], function (err, result) {
+  var outputCode = code
+  connection.query('SELECT * FROM ITEM WHERE code= ?', [outputCode], (err, resultData) => {
+    console.log(resultData[0].qty)
+    var DeleteCode = resultData[0].qty
+    var DeleteCode_1 = DeleteCode - 1
+
+    connection.query(_query2, [DeleteCode_1, DeleteCode], function (err, _result) {
+      // var addCode = _result
+      console.log(_result)
       if (err) {
         console.error(err);
         throw err;
       }
-      let item = result[0];
-      // 재고 체크
-      if (item.qty <= 0) {
-        console.log('stock is 0')
-
-        return res.send(401, {
-          message: '재고가 0인 상품은 출고를 할 수 없습니다.'
-        })
-      }
-
-      connection.query(_query, [code, qty, date_out], function (err, result) {
-        var outputCode = code
-        connection.query('SELECT * FROM ITEM WHERE code= ?', [outputCode], (err, resultData) => {
-          console.log(resultData[0].qty)
-          var DeleteCode = resultData[0].qty
-          var DeleteCode_1 = DeleteCode - 1
-
-          connection.query(_query2, [DeleteCode_1, DeleteCode], function (err, _result) {
-            // var addCode = _result
-            console.log(_result)
-            if (err) {
-              console.error(err);
-              throw err;
-            }
-            connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
-              console.log(result)
-              res.send(201, {
-                status: 'ok',
-                result: result
-
+      connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
+        console.log(result)
+        res.send(201, {
+          status: 'ok',
+          result: result
                 // var query = connection.query(_query, [code, date_out, qty], function (err, result) {
                 //   if (err) {
                 //     console.error(err);
@@ -216,13 +214,11 @@ app.get('/api/stock_in', (req, res) => {
                 //     return res.send(201, {
                 //       status: 'ok',
                 //       result: item
-
-              });
-            })
-          })
+                // });
+          });
         })
-
-
+      })
+    })
         app.get('/api/stock_out', (req, res) => {
           connection.query("SELECT * FROM stock_out", function (err, result, fields) {
             if (err) throw err;
@@ -335,7 +331,7 @@ app.get('/api/stock_in', (req, res) => {
       //       console.log(rows);
       //     }
       //   );
-      // });
-
+      });
+    
 
       app.listen(port, () => console.log(`Listening on port ${port}`));
