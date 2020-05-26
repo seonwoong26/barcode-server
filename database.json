@@ -1,7 +1,12 @@
-{
-    "host": "management-barcode.c7kqoug7ymux.us-east-2.rds.amazonaws.com",
+<<<<<<< HEAD
+{   "host" : "management-barcode.c7kqoug7ymux.us-east-2.rds.amazonaws.com",  
     "user": "user",
+=======
+{
+    "host": "management-barcode.c7kqoug7ymux.us-east-2.rds.amazonaws.com", 
+    "user": "user"  ,
+>>>>>>> parent of 5079e25... server
     "password": "123456789",
-    "port": "3306",
+    "port": "3306"  ,
     "database": "management"
 }
