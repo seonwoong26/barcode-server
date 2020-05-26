@@ -48,7 +48,7 @@ app.get('/api/item', (req, res) => {
 
 
 app.post('/api/item', (req, res) => {
-  let _query = "INSERT INTO ITEM (code, name, price, qty) VALUES (?, ?, ?)";
+  let _query = "INSERT INTO ITEM (code, name, price, qty) VALUES (?, ?, ?, ?)";
   // let _query2 = "SELECT * FROM inventory WHERE(stock) VALUES < (0)"
 
   let code = req.body.code;
@@ -65,7 +65,7 @@ app.post('/api/item', (req, res) => {
   }
 
 
-  var query = connection.query(_query, [code, name, price, count], function (err, result) {
+  var query = connection.query(_query, [code, name, price, qty], function (err, result) {
     if (err) {
       console.error(err);
       throw err;
@@ -100,7 +100,7 @@ app.post('/api/stock_in', (req, res) => {
 
   console.log("IN")
 
-  var query = connection.query(_query, [qty, in_datetime, code], function (err, result) {
+  var query = connection.query(_query, [code, in_datetime, qty], function (err, result) {
     if (err) {
       console.error(err);
       throw err;
