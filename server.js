@@ -219,22 +219,22 @@ connection.query(_query, [code, qty, date_out], function (err, result) {
         })
       })
     })
-        app.get('/api/stock_out', (req, res) => {
-          connection.query("SELECT * FROM stock_out", function (err, result, fields) {
-            if (err) throw err;
-            console.log(result);
-            console.log(fields)
+  app.get('/api/stock_out', (req, res) => {
+    connection.query("SELECT * FROM stock_out", function (err, result, fields) {
+      if (err) throw err;
+      console.log(result);
+      console.log(fields)
 
-            res.send(201, {
-              status: 'ok',
-              result: result
-            });
-          });
-
-          res.send(rows);
-        }
-        );
+      res.send(201, {
+        status: 'ok',
+        result: result
       });
+    });
+
+    res.send(rows);
+  }
+  );
+});
 
 
       // app.get('/api/stock_in', (req, res) => {
