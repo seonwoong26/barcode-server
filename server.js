@@ -234,7 +234,6 @@ connection.query(_query, [code, qty, date_out], function (err, result) {
           res.send(rows);
         }
         );
-
       });
 
 
