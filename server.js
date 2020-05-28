@@ -79,6 +79,20 @@ app.post('/api/item', (req, res) => {
     });
   });
 })
+app.post('/api/stock', (req, res) => {
+
+  var _query = 'SELECT * FROM ITEM where code=?'
+  var itemCode = req.body.code
+  connection.query(_query, [itemCode], function (err, result) {
+
+
+    console.log(result[0].qty)
+    res.send(result[0]);
+    // res.send("품명:" + result[0].name + " , " + "재고: " + result[0].qty);
+
+  })
+})
+
 // 입고시작
 app.post('/api/stock_in', (req, res) => {
   let _query = "INSERT INTO STOCK_IN (code, qty, createdDate) VALUES (?, ?, ?)";
@@ -114,12 +128,9 @@ app.post('/api/stock_in', (req, res) => {
           console.error(err);
           throw err;
         }
-        connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
-          console.log(result)
-          res.send(201, {
-            status: 'ok',
-            result: result
-          });
+        connection.query('SELECT * FROM ITEM where code=?', [inputCode], function (err, result) {
+          console.log(result[0].qty)
+          res.send("품명:" + result[0].name + " , " + "현재수량: " + result[0].qty);
         })
       })
     })
@@ -181,28 +192,9 @@ app.post('/api/stock_out', (req, res) => {
             throw err;
           }
 
-          connection.query('SELECT * FROM ITEM where code=?', [code], function (err, result) {
-            console.log(result)
-            res.send(201, {
-              status: 'ok',
-              result: result
-
-              // var query = connection.query(_query, [code, date_out, qty], function (err, result) {
-              //   if (err) {
-              //     console.error(err);
-              //     throw err;
-              //   }
-              //   connection.query(_query2, [code, qty], function (err, result) {
-              //     if (err) {
-              //       console.error(err);
-              //       throw err;
-              //     }
-              //     item.qty -= 1
-              //     return res.send(201, {
-              //       status: 'ok',
-              //       result: item
-              // });
-            });
+          connection.query('SELECT * FROM ITEM where code=?', [outputCode], function (err, result) {
+            console.log(result[0].qty)
+            res.send("품명:" + result[0].name + " , " + "남은수량: " + result[0].qty);
           })
         })
       }
