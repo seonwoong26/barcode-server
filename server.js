@@ -73,10 +73,7 @@ app.post('/api/item', (req, res) => {
 
     console.log(result);
 
-    res.send(200, {
-      status: 'ok',
-      result: `ITEM is open`
-    });
+    res.send(200, '제품이 추가되었습니다');
   });
 })
 app.post('/api/stock', (req, res) => {
