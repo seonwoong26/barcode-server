@@ -85,10 +85,8 @@ app.post('/api/stock', (req, res) => {
   var itemCode = req.body.code
   connection.query(_query, [itemCode], function (err, result) {
 
-
-    console.log(result[0].qty)
-    res.send(result[0]);
-    // res.send("품명:" + result[0].name + " , " + "재고: " + result[0].qty);
+    console.log(result[0].name)
+    res.send("품명:" + result[0].name + " , " + "재고: " + result[0].qty);
 
   })
 })
