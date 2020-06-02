@@ -18,7 +18,7 @@ connection.connect();
 
 
 app.post('/api/delete', (req, res) => {
-    var sql = 'DELETE FROM ITEM WHERE name ="abc";'
+    var sql = 'DELETE FROM ITEM WHERE name = ?;'
 
     connection.query(sql, (err, result) => {
         if (err) {
