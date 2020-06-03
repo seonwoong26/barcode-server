@@ -2,7 +2,6 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 var cors = require('cors');
-var apiRouter = require('./apiRouter')
 
 var moment = require('moment');
 const app = express();
@@ -33,8 +32,6 @@ connection.connect();
 const multer = require('multer');
 const upload = multer({ dest: './upload' })
 
-
-// app.use('/test', apiRouter)
 
 app.get('/api/item', (req, res) => {
   connection.query("SELECT * FROM ITEM", function (err, result, fields) {
@@ -80,7 +77,8 @@ app.post('/api/item', (req, res) => {
     res.send(200, '제품이 추가되었습니다');
   });
 })
-app.post('/api/item', (req, res) => {
+
+app.post('/api/item2', (req, res) => {
 
   var _query = 'SELECT * FROM ITEM where code=?'
   var itemCode = req.body.code
@@ -98,8 +96,8 @@ app.post('/api/stock_in', (req, res) => {
   let _query2 = "UPDATE ITEM SET qty = ? where code=?"
   // let _query2 = "UPDATE inventory SET stock = stock + quantity where ean=prod_barcode"
   let code = req.body.code;
+  let qty = req.body.qty;
   let date_in = moment().format('YYYY-MM-DD HH:mm:ss');
-  let qty = req.body.qty
 
   console.log(date_in)
   console.log(req.body)
@@ -278,19 +276,78 @@ app.post('/api/item_client', upload.single('image'), (req, res) => {
 
 app.post('/api/stock_inclient', upload.single('image'), (req, res) => {
   let sql = 'INSERT INTO STOCK_IN ( code, qty, date_in) VALUES ( ?, ?, ?)';
+  let _query2 = "UPDATE ITEM SET qty = (?) where code= ( ? )"
   // let image = '/image/' + req.file.filename;
-  console.log("cc")
-  console.log(req.body)
-  // let image = req.body.image
+  // console.log(req.body)
   let code = req.body.code;
-  let qty = req.body.qty;
+  let qty_1 = req.body.qty;
   let date_in = moment().format('YYYY-MM-DD HH:mm:ss');
-  let params = [code, qty, date_in];
+  let params = [code, qty_1, date_in];
 
   connection.query(sql, params,
     (err, rows, fields) => {
-      res.send(rows);
-      console.log(rows);
+      let sql2 = 'SELECT qty , code FROM ITEM WHERE code= ? '
+      connection.query(sql2, [code], (err, result) => {
+
+        console.log("코드:" + JSON.stringify(result[0].code))
+        if (!result) {
+          res.send(rows);
+          // console.log(rows);
+        } else {
+          console.log("수량:" + JSON.stringify(result[0].qty))
+          var intQty = parseInt(result[0].qty) + parseInt(qty_1)
+          // var cod_1 = JSON.stringify(result[0].code)
+          connection.query(_query2, [intQty, code], (err, results) => {
+            if (err) {
+              console.log(err)
+            } else {
+              res.send(result);
+              console.log(results);
+            }
+
+          })
+        }
+      })
+
+    }
+  );
+});
+
+app.post('/api/stock_outclient', upload.single('image'), (req, res) => {
+  let sql = 'INSERT INTO STOCK_OUT ( code, qty, date_out) VALUES ( ?, ?, ?)';
+  let _query2 = "UPDATE ITEM SET qty = (?) where code= ( ? )"
+  // let image = '/image/' + req.file.filename;
+  // console.log(req.body)
+  let code = req.body.code;
+  let qty_1 = req.body.qty;
+  let date_out = moment().format('YYYY-MM-DD HH:mm:ss');
+  let params = [code, qty_1, date_out];
+
+  connection.query(sql, params,
+    (err, rows, fields) => {
+      let sql2 = 'SELECT qty , code FROM ITEM WHERE code= ? '
+      connection.query(sql2, [code], (err, result) => {
+
+        console.log("코드:" + JSON.stringify(result[0].code))
+        if (!result) {
+          res.send(rows);
+          // console.log(rows);
+        } else {
+          console.log("수량:" + JSON.stringify(result[0].qty))
+          var intQty = parseInt(result[0].qty) - parseInt(qty_1)
+          // var cod_1 = JSON.stringify(result[0].code)
+          connection.query(_query2, [intQty, code], (err, results) => {
+            if (err) {
+              console.log(err)
+            } else {
+              res.send(result);
+              console.log(results);
+            }
+
+          })
+        }
+      })
+
     }
   );
 });
