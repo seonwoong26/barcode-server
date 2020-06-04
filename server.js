@@ -65,7 +65,6 @@ app.post('/api/item', (req, res) => {
     qty = 0;
   }
 
-
   var query = connection.query(_query, [code, name, price, qty, date], function (err, result) {
     if (err) {
       console.error(err);
@@ -87,7 +86,6 @@ app.post('/api/item2', (req, res) => {
 
     console.log(result[0].name)
     res.send("품명:" + result[0].name + " , " + "재고: " + result[0].qty);
-
   })
 })
 
@@ -106,8 +104,6 @@ app.post('/api/stock_in', (req, res) => {
     console.log('error')
     res.send(401, 'failed')
   }
-
-
   console.log("IN")
 
   connection.query(_query, [code, qty, date_in], function (err, result) {
@@ -130,11 +126,9 @@ app.post('/api/stock_in', (req, res) => {
         })
       })
     })
-    // console.log(result)
     if (err) {
       console.error(err);
       throw err;
-
     }
   });
 });
@@ -214,7 +208,6 @@ app.post('/api/stock_out', (req, res) => {
     })
   })
 });
-//출고 끝
 
 app.get('/api/stock_out', (req, res) => {
   connection.query("SELECT * FROM STOCK_OUT", function (err, result, fields) {
@@ -228,7 +221,7 @@ app.get('/api/stock_out', (req, res) => {
     });
   })
 })
-
+//출고 끝
 
 //웹 추가
 app.post('/api/item_client', upload.single('image'), (req, res) => {
