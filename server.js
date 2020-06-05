@@ -242,6 +242,8 @@ app.post('/api/item_client', upload.single('image'), (req, res) => {
   let price = req.body.price;
   let qty = req.body.qty;
   let date = moment().format('YYYY-MM-DD HH:mm:ss');
+  // let date = new Date();
+  // var dataString = date.getYear() + "년"
   let params = [code, name, price, qty, date];
 
   connection.query(sql, params,
